@@ -22,12 +22,14 @@ class StacCreator(Processor):
         itempath: DepItemPath,
         remote: bool = True,
         collection_url_root: str = "https://stac.staging.digitalearthpacific.io/collections",
+        aws_region: str = "us-west-2",
         make_hrefs_https: bool = True,
         **kwargs,
     ):
         self._itempath = itempath
         self._remote = remote
         self._collection_url_root = collection_url_root
+        self._aws_region = aws_region
         self._make_hrefs_https = make_hrefs_https
         self._kwargs = kwargs
 
@@ -42,6 +44,7 @@ class StacCreator(Processor):
             data=data,
             remote=self._remote,
             collection_url_root=self._collection_url_root,
+            aws_region=self._aws_region,
             make_hrefs_https=self._make_hrefs_https,
             **self._kwargs,
         )
@@ -53,6 +56,7 @@ def get_stac_item(
     data: DataArray | Dataset,
     remote: bool = True,
     collection_url_root: str = "https://stac.staging.digitalearthpacific.org/collections",
+    aws_region: str = "us-west-2",
     make_hrefs_https: bool = True,
     **kwargs,
 ) -> Item | str:
@@ -66,7 +70,7 @@ def get_stac_item(
             if make_hrefs_https:
                 # E.g., https://dep-public-prod.s3.us-west-2.amazonaws.com/
                 prefix = URL(
-                    f"https://{getattr(itempath, 'bucket')}.s3.us-west-2.amazonaws.com"
+                    f"https://{getattr(itempath, 'bucket')}.s3.{aws_region}.amazonaws.com"
                 )
             else:
                 # E.g., s3://dep-public-prod/
